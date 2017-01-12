@@ -33,4 +33,17 @@
 		<servlet-name>AnalyzeFileServlet</servlet-name>
 		<url-pattern>/analyzeFile</url-pattern>
 	</servlet-mapping>
+	
+	<servlet>
+		<description>
+				For Viewing analyzed files
+		</description>
+		<display-name>ViewFileServlet</display-name>
+		<servlet-name>ViewFileServlet</servlet-name>
+		<servlet-class>servlet.dashboard.ViewFileServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ViewFileServlet</servlet-name>
+		<url-pattern>/viewFile</url-pattern>
+	</servlet-mapping>
 </web-app>

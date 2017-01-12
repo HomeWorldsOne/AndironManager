@@ -1,0 +1,52 @@
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+	<!-- Content Header (Page header) -->
+	<section class="content-header">
+
+		<!-- output for analyzing content -->
+		<div class="box">
+            <div class="box-header">
+              <h3 class="box-title">Data Table With Full Features</h3>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+              <table id="example1" class="table table-bordered table-striped">
+                <thead>
+                <tr>
+                  <th>OutputId</th>
+                  <th>Value</th>
+                  <th>Number of Items</th>
+                  <th>Support</th>
+                </tr>
+                </thead>
+                <tbody>
+                <c:forEach items="${entries}" var="entry">
+	                <tr>
+	                  <td>${entry.getOutputId()}</td>
+	                  <td>${entry.getValues()}</td>
+	                  <td>${entry.getNumOfValues()}</td>
+	                  <td>${entry.getSupport()}</td>
+	                </tr>
+                </c:forEach>
+                </tbody>
+                
+              </table>
+            </div>
+            <!-- /.box-body -->
+          </div>
+          <!-- /.box -->
+		
+		
+	</section>
+	<!-- /.content -->
+</div>
+<!-- /.content-wrapper -->
+
+<footer class="main-footer">
+	<div class="pull-right hidden-xs">
+		<b>Version</b> 1.2
+	</div>
+	<strong>Hello</strong> 
+</footer>
+
+<!-- ./wrapper -->

@@ -9,6 +9,9 @@
 </script>
 <!-- Bootstrap 3.3.6 -->
 <script src="${pageContext.request.contextPath}/workspace/home/dashboard/bootstrap/js/bootstrap.min.js"></script>
+<!-- DataTables -->
+<script src="$${pageContext.request.contextPath}/workspace/home/dashboard/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="${pageContext.request.contextPath}/workspace/home/dashboard/plugins/datatables/dataTables.bootstrap.min.js"></script>
 <!-- Slimscroll -->
 <script src="${pageContext.request.contextPath}/workspace/home/dashboard/plugins/slimScroll/jquery.slimscroll.min.js"></script>
 <!-- FastClick -->

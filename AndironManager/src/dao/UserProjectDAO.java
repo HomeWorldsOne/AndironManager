@@ -101,6 +101,7 @@ public class UserProjectDAO extends BaseDAO {
 	// Builds user from a database
 	public static UserProject parseUserProject(ResultSet rs) throws SQLException {
 		UserProject userProject = new UserProject();
+		userProject.setUserProjectId(rs.getInt("userProjectId"));
 		userProject.setUserId(rs.getInt("userId"));
 		userProject.setProjectId(rs.getInt("projectId"));
 		return userProject;

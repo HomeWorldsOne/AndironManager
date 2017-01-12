@@ -1,68 +1,80 @@
 package algorithms.apriori;
-
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
+//Imports
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import dao.BaseDAO;
 
-//This class will be used to move the algorithms outputs into the database
-public class AprioriDAO extends dao.BaseDAO{
-	
-	/*
-	 * The outputs form the a priori algorithm typically look something like this:
-	 * {1} support 4 // i.e. the item "1" appears 4 times
-	 * to store the outputs from the algorithm, these are the current fields I consider:
-	 * id, algorithm, userId, projectId, value, support, noValues, fileId
-	 * Thus we should be able to utilize each
-	 */
-	
-	public static void insertValues(String fileUrl) throws IOException{
-		
-		//Store for all lines in the file
-		List<String> lines = new ArrayList<String>();
-		
-		// Open the file
-		FileInputStream fstream = new FileInputStream(fileUrl);
-		BufferedReader br = new BufferedReader(new InputStreamReader(fstream));
+import algorithms.apriori.AprioriDTO;
 
-		String strLine;
+public class AprioriDAO extends BaseDAO {
 
-		//Read File Line By Line
-		while ((strLine = br.readLine()) != null)   {
-		  lines.add(strLine);
-		}
-		
-		//close reader
-		br.close();
-		
-		for(String s: lines){
-			
-			//Segregate the line into its unique sections
-			String[] parts = s.split("#SUP");
-			String itemValue = parts[0]; 
-			String support = parts[1]; 
-			int size = 1;
-			
-			if(itemValue.contains(",")){
-				String[] items = itemValue.split(",");
-				size = items.length;
+	public static List<AprioriDTO> selectAllByInputId(int outputId) {
+		List<AprioriDTO> aprioriDTOList = new ArrayList<AprioriDTO>();
+		String sql = "SELECT * FROM aprioriEntries WHERE outputId = ?";
+
+		try (Connection conn = getDBConnection(); PreparedStatement stmt = conn.prepareStatement(sql);) {
+			stmt.setInt(1, outputId);
+			try (ResultSet rs = stmt.executeQuery()) {
+				while (rs.next()) {
+					aprioriDTOList.add(parseAprioriDTO(rs));
+				}
 			}
-			
-			//Push values to database
-			int userId = 0; //To be implemented
-			int projectId = 0; //To be implemented
-			int fileId; //foriegn key to thingo
-			String algorithm = "Apriori";
-			String value = itemValue;
-			int noValues = size;
-			
-			
-			
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
-		
+		return aprioriDTOList;
 	}
 
+	// Select specific aprioriDTO based on aprioriDTOId
+	public static AprioriDTO selectById(int aprioriEntriesId) {
+		String sql = "SELECT * FROM aprioriEntries WHERE aprioriEntriesId=?";
+
+		try (Connection conn = getDBConnection(); PreparedStatement stmt = conn.prepareStatement(sql);) {
+			stmt.setInt(1, aprioriEntriesId);
+
+			try (ResultSet rs = stmt.executeQuery()) {
+				if (rs.next()) {
+					return parseAprioriDTO(rs);
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	// Insert AprioriDTO class into database row
+	public static void add(AprioriDTO aprioriDTO) {
+		String sql = "INSERT INTO `aprioriEntries`(`outputId`, `value`, `numOfItems`, `support`)" + "VALUES (?,?,?,?)";
+		try (Connection conn = getDBConnection(); PreparedStatement stmt = conn.prepareStatement(sql);) {
+			fillPreparedStatement(stmt, aprioriDTO);
+			stmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return;
+	}
+
+	// Builds user from a database
+	public static AprioriDTO parseAprioriDTO(ResultSet rs) throws SQLException {
+		AprioriDTO aprioriDTO = new AprioriDTO();
+		aprioriDTO.setAprioriEntriesId(rs.getInt("aprioriEntriesId"));
+		aprioriDTO.setNumOfValues(rs.getInt("numOfItems"));
+		aprioriDTO.setOutputId(rs.getInt("outputId"));
+		aprioriDTO.setSupport(Integer.parseInt(rs.getString("support")));
+		aprioriDTO.setValues(rs.getString("value"));
+		return aprioriDTO;
+	}
+
+	// Inserts User class details into a SQL statement
+	public static void fillPreparedStatement(PreparedStatement stmt, AprioriDTO aprioriDTO) throws SQLException {
+		stmt.setInt(1, aprioriDTO.getOutputId());
+		stmt.setString(2, aprioriDTO.getValues());
+		stmt.setInt(3, aprioriDTO.getNumOfValues());
+		stmt.setString(4, Integer.toString(aprioriDTO.getSupport()));
+	}
 }

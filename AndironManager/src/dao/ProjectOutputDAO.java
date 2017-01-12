@@ -66,7 +66,7 @@ public class ProjectOutputDAO extends BaseDAO {
 
 	// Insert ProjectOutput class into database row
 	public static void add(ProjectOutput projectOutput) {
-		String sql = "INSERT INTO `projectOutput`(`projectId`, `inputId`)" + "VALUES (?,?)";
+		String sql = "INSERT INTO `projectOutput`(`projectId`, `outputId`)" + "VALUES (?,?)";
 		try (Connection conn = getDBConnection(); PreparedStatement stmt = conn.prepareStatement(sql);) {
 			fillPreparedStatement(stmt, projectOutput);
 			stmt.executeUpdate();
@@ -78,7 +78,7 @@ public class ProjectOutputDAO extends BaseDAO {
 
 	// Update ProjectOutput class in database row
 	public static void update(ProjectOutput projectOutput) {
-		String sql = "UPDATE `projectOutput` SET `projectId`=?, `inputId`=?" + "WHERE `projectOutputId` = ?";
+		String sql = "UPDATE `projectOutput` SET `projectId`=?, `outputId`=?" + "WHERE `projectOutputId` = ?";
 		try (Connection conn = getDBConnection(); PreparedStatement stmt = conn.prepareStatement(sql);) {
 			fillPreparedStatement(stmt, projectOutput);
 			stmt.setInt(3, projectOutput.getProjectOutputId());
@@ -102,8 +102,9 @@ public class ProjectOutputDAO extends BaseDAO {
 	// Builds user from a database
 	public static ProjectOutput parseProjectOutput(ResultSet rs) throws SQLException {
 		ProjectOutput projectOutput = new ProjectOutput();
+		projectOutput.setProjectOutputId(rs.getInt("projectOutputId"));
 		projectOutput.setProjectId(rs.getInt("projectId"));
-		projectOutput.setOutputId(rs.getInt("inputId"));
+		projectOutput.setOutputId(rs.getInt("outputId"));
 		return projectOutput;
 	}
 

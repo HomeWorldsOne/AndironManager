@@ -96,7 +96,7 @@ public class UploadFileServlet extends HttpServlet {
 					//Make the input
 					Input input = new Input();
 					input.setDataName(fileName);
-					input.setFileUrl(fileSaveDir + fileItem.getName());
+					input.setFileUrl(fileSaveDir + File.separator + fileItem.getName());
 					int rowId = InputDAO.add(input);
 					
 					//Get the project Id

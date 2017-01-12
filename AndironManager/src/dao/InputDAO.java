@@ -34,11 +34,15 @@ public class InputDAO extends BaseDAO {
 		String sql = "INSERT INTO `input`(`inputName`, `fileUrl`)" + "VALUES (?,?)";
 		try (Connection conn = getDBConnection(); PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);) {
 			fillPreparedStatement(stmt, input);
-			rowId = stmt.executeUpdate();
+			stmt.executeUpdate();
+			ResultSet tableKeys = stmt.getGeneratedKeys();
+			tableKeys.next();
+			rowId = tableKeys.getInt(1);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return rowId;
+		
 	}
 
 	// Update Input class in database row
@@ -67,6 +71,7 @@ public class InputDAO extends BaseDAO {
 	// Builds user from a database
 	public static Input parseInput(ResultSet rs) throws SQLException {
 		Input input = new Input();
+		input.setInputId(rs.getInt("inputId"));
 		input.setDataName(rs.getString("inputName"));
 		input.setFileUrl(rs.getString("fileUrl"));
 		return input;

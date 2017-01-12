@@ -102,6 +102,7 @@ public class ProjectInputDAO extends BaseDAO {
 	// Builds user from a database
 	public static ProjectInput parseProjectInput(ResultSet rs) throws SQLException {
 		ProjectInput projectInput = new ProjectInput();
+		projectInput.setProjectInputId(rs.getInt("projectInputId"));
 		projectInput.setProjectId(rs.getInt("projectId"));
 		projectInput.setInputId(rs.getInt("inputId"));
 		return projectInput;

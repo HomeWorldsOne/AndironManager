@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -31,7 +32,7 @@ import organisers.*;
 import algorithms.converters.*;
 
 public class AnalyzeFileServlet extends HttpServlet {
-	private static final String SAVE_DIR = "uploadFiles";
+	private static final String SAVE_DIR = "analyzedFiles";
 	private static final long serialVersionUID = 1L;
 	private ServletFileUpload uploader = null;
 
@@ -55,11 +56,13 @@ public class AnalyzeFileServlet extends HttpServlet {
 				);
 		request.setAttribute("inputs", inputs);
 		
-		//Find all the inputs
+		//Find all the outputs
 		List<Output> outputs = ConvertList.getAllOutputFiles(
 				ProjectOutputDAO.selectAllByProjectId(projectId)
 				);
 		request.setAttribute("outputs", outputs);
+		
+		
 		
 		//Initiate request
 		RequestDispatcher rd = request.getRequestDispatcher("workspace/home/dashboard/fileanalyze.jsp");
@@ -69,61 +72,55 @@ public class AnalyzeFileServlet extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		if (!ServletFileUpload.isMultipartContent(request)) {
-			throw new ServletException("Content type is not multipart/form-data");
-		}
-
 		
-		try {
-			
-			//Lists
-			List<FileItem> fileItemsList = uploader.parseRequest(request);
-			Iterator<FileItem> fileItemsIterator = fileItemsList.iterator();
-			
-			//Step through form data
-			while (fileItemsIterator.hasNext()) {
-				
-				//Create File Item
-				// gets absolute path of the web application
-		        String appPath = request.getServletContext().getRealPath("/");
-		        String newPath = appPath.replace(".metadata/.plugins/org.eclipse.wst.server.core/tmp0/wtpwebapps/", "");
-		        // constructs path of the directory to save uploaded file
-		        String savePath = newPath + File.separator + SAVE_DIR;
-		         
-		        // creates the save directory if it does not exists
-		        File fileSaveDir = new File(savePath);
-		        if (!fileSaveDir.exists()) {
-		            fileSaveDir.mkdir();
-		        }
-		        
-		        FileItem fileItem = fileItemsIterator.next();
-		        if(!fileItem.getName().equals(null)){
-			        String fileName = fileItem.getName();
-			        System.out.println(fileName);
-			        fileItem.write(new File(fileSaveDir + File.separator + fileItem.getName()));
-					
-					//Make the input
-					Input input = new Input();
-					input.setDataName(fileName);
-					input.setFileUrl(fileSaveDir + fileItem.getName());
-					int rowId = InputDAO.add(input);
-					
-					//Get the project Id
-					int projectId = 1;
-				
-					//Create a project - input locator
-					ProjectInput projectInput = new ProjectInput();
-					projectInput.setInputId(rowId);
-					projectInput.setProjectId(projectId);
-					ProjectInputDAO.add(projectInput);
-		        }
-				
-			}
-		} catch (FileUploadException e) {
-			e.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		//Project variables
+		int projectId = 1;
+		
+		//Respond to form -- Analyze form
+		String method = request.getParameter("method");
+		String inputId = request.getParameter("inputFile");
+		int inputIdInt = Integer.parseInt(inputId);
+		Input input = InputDAO.selectById(inputIdInt);
+		String inputLocation = input.getFileUrl();
+		
+		//Create the output location
+		String appPath = request.getServletContext().getRealPath("/");
+        String newPath = appPath.replace(".metadata/.plugins/org.eclipse.wst.server.core/tmp0/wtpwebapps/", "");
+        String outputLocation = newPath + File.separator + SAVE_DIR;
+        File fileSaveDir = new File(outputLocation);
+        if (!fileSaveDir.exists()) {
+            fileSaveDir.mkdir();
+        }
+        
+        //Output filename is the equivalent of the project, the algorithm and the inputFileId
+        
+        String outputFileLocation = outputLocation + File.separator + projectId + input.getInputId() + ".txt";
+		
+		//Analyze
+		AlgorithmOrganiser ao = new AlgorithmOrganiser();
+		ao.selector(Integer.parseInt(method), inputLocation, outputFileLocation);
+		
+		//Create the output locator
+		Date date = new Date();
+		String dateString = date.toString();
+		
+		Output output = new Output();
+		output.setDateMade(dateString);
+		output.setOutputAlgorithm(method);
+		output.setOutputFileName(method + input.getDataName());
+		output.setOutputFileUrl(outputLocation);
+		int outputId = OutputDAO.add(output);
+		
+		//Insert into the database
+		ao.createAprioriDtos(outputFileLocation, outputId);
+		
+		//create the project output
+		ProjectOutput projectOutput = new ProjectOutput();
+		projectOutput.setOutputId(outputId);
+		projectOutput.setProjectId(1);
+		ProjectOutputDAO.add(projectOutput);
+		
+		//Return to page
 		doGet(request, response);
 	}
 	

@@ -29,15 +29,19 @@ public class OutputDAO extends BaseDAO {
 	}
 
 	// Insert Output class into database row
-	public static void add(Output output) {
+	public static int add(Output output) {
+		int rowId = 0;
 		String sql = "INSERT INTO `output`(`outputFileName`, `outputAlgorithm`, `dateMade`, `outputFileUrl`)" + "VALUES (?,?,?,?)";
-		try (Connection conn = getDBConnection(); PreparedStatement stmt = conn.prepareStatement(sql);) {
+		try (Connection conn = getDBConnection(); PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);) {
 			fillPreparedStatement(stmt, output);
 			stmt.executeUpdate();
+			ResultSet tableKeys = stmt.getGeneratedKeys();
+			tableKeys.next();
+			rowId = tableKeys.getInt(1);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return;
+		return rowId;
 	}
 
 	// Update Output class in database row
@@ -66,6 +70,7 @@ public class OutputDAO extends BaseDAO {
 	// Builds user from a database
 	public static Output parseOutput(ResultSet rs) throws SQLException {
 		Output output = new Output();
+		output.setOutputId(rs.getInt("outputId"));
 		output.setOutputFileName(rs.getString("outputFileName"));
 		output.setOutputAlgorithm(rs.getString("outputAlgorithm"));
 		output.setDateMade(rs.getString("dateMade"));

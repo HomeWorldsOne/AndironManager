@@ -1,0 +1,9 @@
+-1 #SUP: 20
+1 #SUP: 7
+-2 #SUP: 4
+2 #SUP: 5
+3 #SUP: 8
+4 #SUP: 3
+5 #SUP: 3
+6 #SUP: 4
+1 4  #SUP: 2

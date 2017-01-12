@@ -1,15 +1,14 @@
 package servlet.dashboard;
 
-import java.io.BufferedReader;
 //Imports
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -27,67 +26,46 @@ import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
-import dto.FileLocator;
-import dto.ConvertedFile;
-
-import dao.FileLocatorDAO;
-import dao.ConvertedFileDAO;
+import dto.*;
+import dao.*;
+import organisers.*;
+import algorithms.apriori.AprioriDAO;
+import algorithms.apriori.AprioriDTO;
+import algorithms.converters.*;
 
 public class ViewFileServlet extends HttpServlet {
-
-	private static final long serialVersionUID = 1L;
-	private ServletFileUpload uploader = null;
-
+	
 	@Override
 	public void init() throws ServletException {
-		DiskFileItemFactory fileFactory = new DiskFileItemFactory();
-		File filesDir = (File) getServletContext().getAttribute("FILES_DIR_FILE");
-		fileFactory.setRepository(filesDir);
-		this.uploader = new ServletFileUpload(fileFactory);
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		
-		//Create file to display
-		String convertFileId = request.getParameter("id");
-		ConvertedFile convertFile = ConvertedFileDAO.selectById(Integer.parseInt(convertFileId));
+		//Get the id
+		String outputIdString = request.getParameter("id");
+		Output output = OutputDAO.selectById(Integer.parseInt(outputIdString));
 		
-		List<String> lines = new ArrayList<String>();
+		//generate all entries
+		List<AprioriDTO> entries = AprioriDAO.selectAllByInputId(output.getOutputId());
 		
-		// Open the file
-		FileInputStream fstream = new FileInputStream(convertFile.getConvertedFileUrl());
-		BufferedReader br = new BufferedReader(new InputStreamReader(fstream));
-
-		String strLine;
-
-		//Read File Line By Line
-		while ((strLine = br.readLine()) != null)   {
-		  // Print the content on the console
-		  System.out.println (strLine);
-		  lines.add(strLine);
-		}
-
-		//Close the input stream
-		br.close();
+		//push to object value
+		request.setAttribute("entries", entries);
 		
-		String home = "Analyse Files";
-		String currentPage = "View File";
-		
-		List<String> names = new ArrayList<String>();
-		names.add(home);
-		names.add(currentPage);
-		
-		request.setAttribute("names", names);
-		request.setAttribute("lines", lines);
-		RequestDispatcher rd = request.getRequestDispatcher("WorkSpace/Dashboard/viewfile.jsp");
+		//Initiate request
+		RequestDispatcher rd = request.getRequestDispatcher("workspace/home/dashboard/fileview.jsp");
 		rd.forward(request, response);
 		
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		
+		
+		//Return to page
 		doGet(request, response);
 	}
+	
+	
 
 }
