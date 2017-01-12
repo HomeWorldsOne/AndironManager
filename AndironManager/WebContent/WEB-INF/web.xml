@@ -3,75 +3,34 @@
 	xmlns="http://java.sun.com/xml/ns/javaee"
 	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	id="WebApp_ID" version="2.5">
-  <display-name>AndironManager</display-name>
-  <welcome-file-list>
-    <welcome-file>WorkSpace/Dashboard/index.jsp</welcome-file>
-    
-  </welcome-file-list>
-  
-  	<servlet>
-		<description>
-				Locates and utilises a Servlet to transfer files into the system
-		</description>
-		<display-name>FileUploadServlet</display-name>
-		<servlet-name>FileUploadServlet</servlet-name>
-		<servlet-class>servlet.dashboard.FileUploadServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>FileUploadServlet</servlet-name>
-		<url-pattern>/fileUpload</url-pattern>
-	</servlet-mapping>
-  
-  	<servlet>
-		<description>
-				Converts file based on algorithm
-		</description>
-		<display-name>ConvertFileServlet</display-name>
-		<servlet-name>ConvertFileServlet</servlet-name>
-		<servlet-class>servlet.dashboard.ConvertFileServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>ConvertFileServlet</servlet-name>
-		<url-pattern>/convertFile</url-pattern>
-	</servlet-mapping>
+	<display-name>AndironManager</display-name>
+	<welcome-file-list>
+		<welcome-file>WorkSpace/dashboard/index.jsp</welcome-file>
+	</welcome-file-list>
 	
 	<servlet>
 		<description>
-				Returns to fileuploader
+				For uploading raw files
 		</description>
-		<display-name>FileUploadServletOther</display-name>
-		<servlet-name>FileUploadServletOther</servlet-name>
-		<servlet-class>servlet.dashboard.FileUploadServletOther</servlet-class>
+		<display-name>UploadFileServlet</display-name>
+		<servlet-name>UploadFileServlet</servlet-name>
+		<servlet-class>servlet.dashboard.UploadFileServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>FileUploadServletOther</servlet-name>
-		<url-pattern>/fileUploadReturn</url-pattern>
+		<servlet-name>UploadFileServlet</servlet-name>
+		<url-pattern>/uploadFile</url-pattern>
 	</servlet-mapping>
-	
+
 	<servlet>
 		<description>
-				Views Txt Files
+				For Analyzing the new files
 		</description>
-		<display-name>ViewFileServlet</display-name>
-		<servlet-name>ViewFileServlet</servlet-name>
-		<servlet-class>servlet.dashboard.ViewFileServlet</servlet-class>
+		<display-name>AnalyzeFileServlet</display-name>
+		<servlet-name>AnalyzeFileServlet</servlet-name>
+		<servlet-class>servlet.dashboard.AnalyzeFileServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>ViewFileServlet</servlet-name>
-		<url-pattern>/viewFile</url-pattern>
+		<servlet-name>AnalyzeFileServlet</servlet-name>
+		<url-pattern>/analyzeFile</url-pattern>
 	</servlet-mapping>
-	
-	<servlet>
-		<description>
-				Converting Files into SPMF format
-		</description>
-		<display-name>FileUploadForConversionServlet</display-name>
-		<servlet-name>FileUploadForConversionServlet</servlet-name>
-		<servlet-class>servlet.dashboard.FileUploadForConversionServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>FileUploadForConversionServlet</servlet-name>
-		<url-pattern>/fileConvert</url-pattern>
-	</servlet-mapping>
-	
 </web-app>

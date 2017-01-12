@@ -29,20 +29,21 @@ public class InputDAO extends BaseDAO {
 	}
 
 	// Insert Input class into database row
-	public static void add(Input input) {
-		String sql = "INSERT INTO `input`(`dataName`, `fileUrl`)" + "VALUES (?,?)";
-		try (Connection conn = getDBConnection(); PreparedStatement stmt = conn.prepareStatement(sql);) {
+	public static int add(Input input) {
+		int rowId = 0;
+		String sql = "INSERT INTO `input`(`inputName`, `fileUrl`)" + "VALUES (?,?)";
+		try (Connection conn = getDBConnection(); PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);) {
 			fillPreparedStatement(stmt, input);
-			stmt.executeUpdate();
+			rowId = stmt.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return;
+		return rowId;
 	}
 
 	// Update Input class in database row
 	public static void update(Input input) {
-		String sql = "UPDATE `input` SET `dataName`=?, `fileUrl`=?" + "WHERE `inputId` = ?";
+		String sql = "UPDATE `input` SET `inputName`=?, `fileUrl`=?" + "WHERE `inputId` = ?";
 		try (Connection conn = getDBConnection(); PreparedStatement stmt = conn.prepareStatement(sql);) {
 			fillPreparedStatement(stmt, input);
 			stmt.setInt(3, input.getInputId());
@@ -66,7 +67,7 @@ public class InputDAO extends BaseDAO {
 	// Builds user from a database
 	public static Input parseInput(ResultSet rs) throws SQLException {
 		Input input = new Input();
-		input.setDataName(rs.getString("dataName"));
+		input.setDataName(rs.getString("inputName"));
 		input.setFileUrl(rs.getString("fileUrl"));
 		return input;
 	}

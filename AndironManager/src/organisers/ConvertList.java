@@ -58,4 +58,30 @@ public class ConvertList {
 		return inputFiles;
 
 	}
+	
+	// Method is used to convert all composite entities into useful classes
+	public static List<Input> getAllInputFilesFromIHO(List<InputHasOutput> list) {
+		List<Input> inputFiles = new ArrayList<Input>();
+
+		for (InputHasOutput iho : list) {
+			Input input = InputDAO.selectById(iho.getInputId());
+			inputFiles.add(input);
+		}
+
+		return inputFiles;
+
+	}
+
+	// Method is used to convert all composite entities into useful classes
+	public static List<Output> getAllOutputFilesFromIHO(List<InputHasOutput> list) {
+		List<Output> outputFiles = new ArrayList<Output>();
+
+		for (InputHasOutput iho : list) {
+			Output output = OutputDAO.selectById(iho.getOutputId());
+			outputFiles.add(output);
+		}
+
+		return outputFiles;
+
+	}
 }
